@@ -1,0 +1,32 @@
+﻿{
+    "name": "beyoio/beyod",
+    "description": "beyod - 高性能分布式、事件驱动、异步非阻塞php socket网络应用框架",
+    "keywords": [
+        "php sockets","beyod","asynchronous non-blocking"
+    ],
+    "homepage": "http://www.beyod.net/",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "张旭",
+            "email": "zhangxugg@163.com",
+            "homepage": "http://www.beyod.net/",
+            "role": "Founder and project lead"
+        }
+    ],
+    "support": {
+        "issues": "http://www.beyod.net/feedback",
+        "wiki": "http://www.beyod.net",
+        "source": "https://github.com/beyio/beyod"
+    },
+    "require": {
+        "php": ">=5.6.0",
+        "ext-mbstring": "*",
+        "ext-ctype": "*",
+        "lib-pcre": "*",
+    },
+    "autoload": {
+        "psr-4": {"beyod\\": ""}
+    }
+}
