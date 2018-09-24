@@ -25,6 +25,7 @@
         "ext-mbstring": "*",
         "ext-ctype": "*",
         "lib-pcre": "*",
+        "ext-event":"*"
     },
     "autoload": {
         "psr-4": {"beyod\\": ""}
