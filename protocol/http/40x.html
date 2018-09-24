@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><?=$res->statusCode?> <?=$res->body?></title>
+<style>
+    body {
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+    
+    address {
+	background:#636;
+	color:#FFF;
+   	padding:6px;
+    }
+</style>
+</head>
+<body>
+<h1><?=$res->statusCode?> <?=$res->body?></h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br/>
+Please try again later.</p>
+
+<hr size="0" />
+<address class="row">
+<?=\Yii::$app->server->server_token?> php <?=phpversion()?>
+</address>
+
+</body>
+</html>
+

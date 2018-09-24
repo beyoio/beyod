@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Index of <?=$baseDir?></title>
+<base href="<?=$baseDir?>" />
+<style type="text/css">
+html,body{
+color:#000;
+font-size:14px;
+font-family:"Lucida Console", Monaco, monospace;
+margin:0;
+padding:0;
+}
+
+
+h1, .footer{
+	background:#636;
+	color:#FFF;
+	padding:8px 16px;
+	margin-top:0;
+}
+
+a{
+	color:#000;
+	font-size:14px;
+	line-height:120%;
+	margin-left:24px;
+}
+
+a:hover{
+	text-decoration:underline;
+}
+
+.row{
+	padding:4px 8px;	
+}
+
+.row span{
+	display:inline-block;
+	width:20%;
+}
+
+.row span.name{
+	padding-left:2em;
+}
+
+.row:hover, tr:hover{
+	background:#eee;	
+}
+
+.footer a{
+	color:#FFF;	
+}
+
+address {
+	background:#636;
+	color:#FFF;
+   	padding:6px;
+}
+
+</style>
+</head>
+<body>
+<div class="top">
+<h1>Index of <?=$baseDir?></h1>
+<div class="row"><a href="../"> Parent Directory</a></div>
+</div>
+<hr size="0" />
+<?php
+foreach($dirs as $dr){
+?>
+<div class="row"><a href="<?=$dr['name']?>/"><?=$dr['name']?></a></div>
+<?php }?>
+
+<table width="100%">
+<?php foreach($files as $f){?>
+<tr>
+<td><a href="<?=$f['name']?>"><?=$f['name']?></a></td>
+<td><?=$f['modified']?></td>
+<td><?=$f['size']?></td>
+</tr>
+<?php }?>
+</table>
+
+<hr size="0" />
+<address>
+<?=\Yii::$app->server->server_token?> php <?=phpversion()?>
+</address>
+</body></html>
