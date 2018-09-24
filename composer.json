@@ -6,6 +6,7 @@
     ],
     "homepage": "http://www.beyod.net/",
     "type": "library",
+    "minimum-stability":"stable",
     "license": "MIT",
     "authors": [
         {
