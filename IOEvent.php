@@ -23,7 +23,7 @@ class IOEvent extends \yii\base\Event
         }
     }
     /**
-     * @var Connection|StreamClient the Listenner or StreamClient of the Event
+     * @var Connection|StreamClient the Listener or StreamClient of the Event
      */
     public $sender;
     

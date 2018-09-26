@@ -16,7 +16,7 @@ use beyod\event\EventLooper;
 use beyod\protocol\dns\Message;
 
 /**
- * Listener represents a socket listenner for a socket address. 
+ * Listener represents a socket listener for a socket address. 
  * A listener has three necessary components - listen/handler/parser.
  * listen: The type of socket created is determined by the transport 
  * specified using standard URL formatting: transport://target. 
@@ -34,7 +34,7 @@ use beyod\protocol\dns\Message;
  * @since 1.0
  */
  
-class Listenner extends Component 
+class Listener extends Component 
 {
     /**
      * @var string socket listen address 

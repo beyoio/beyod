@@ -22,7 +22,7 @@ use yii\base\Behavior;
 class Handler extends Behavior
 {    
     /**
-     * @var Listenner the listenner of the handler
+     * @var Listener the listener of the handler
      */
     public $owner;
     
@@ -50,7 +50,7 @@ class Handler extends Behavior
     
     
     /**
-     * handler is created before the listenner start accept.
+     * handler is created before the listener start accept.
      */
     public function init(){}
     
@@ -61,8 +61,8 @@ class Handler extends Behavior
      */
     public function sendto(UdpMessageEvent $event, $message, $flag=0, $raw=false)
     {
-        if(($event->sender instanceof Connection) && $event->sender->listenner->parser){
-            $message = call_user_func([$event->sender->listenner->parser, 'encode'], $message, null);
+        if(($event->sender instanceof Connection) && $event->sender->listener->parser){
+            $message = call_user_func([$event->sender->listener->parser, 'encode'], $message, null);
         }
         
         stream_socket_sendto($event->socket, (string)$message, $flag, $event->peer);

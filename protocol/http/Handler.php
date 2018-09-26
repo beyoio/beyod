@@ -171,7 +171,7 @@ class Handler extends \beyod\Handler
         $event->message->_SERVER['SERVER_ADDR'] = $event->sender->local;
         $event->message->_SERVER['REMOTE_ADDR'] = $event->sender->peer;
         $event->message->_SERVER['DOCUMENT_ROOT'] = $this->document_root;
-        $event->message->_SERVER['REQUEST_SCHEME'] = $event->sender->listenner->isSSL() ? 'https':'http';
+        $event->message->_SERVER['REQUEST_SCHEME'] = $event->sender->listener->isSSL() ? 'https':'http';
     }
     
     /**
