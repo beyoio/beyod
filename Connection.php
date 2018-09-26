@@ -38,9 +38,9 @@ class Connection extends BaseConnection
     
     /**
      * The connection's Listener
-     * @var Listenner $listenner
+     * @var Listener $listener
      */
-    public $listenner;
+    public $listener;
     /**
      * The timestamp when the connection established.
      * @var int $connect_at
@@ -89,18 +89,18 @@ class Connection extends BaseConnection
         static::$unusedIds[$id] = $id;
     }
     
-    public function __construct($socket, Listenner $listenner=null)
+    public function __construct($socket, Listener $listener=null)
     {
         $this->id = static::generateId();
         $this->socket =  $socket;
-        $this->listenner = $listenner;
+        $this->listener = $listener;
         $this->init();
     }
     
     public function init()
     {
         $this->status = self::STATUS_ESTABLISHED;
-        if($this->listenner->isSSL()) {
+        if($this->listener->isSSL()) {
             stream_socket_enable_crypto($this->socket, false);
         }
         
@@ -114,7 +114,7 @@ class Connection extends BaseConnection
         $this->local = stream_socket_get_name($this->socket, false);
         
         static::$count++;
-        $this->listenner->connections[$this->id] = $this;
+        $this->listener->connections[$this->id] = $this;
         
         static::$connections[$this->id] = $this;
         
@@ -124,7 +124,7 @@ class Connection extends BaseConnection
     
     public function ready()
     {
-        $timeout = $this->listenner->accept_timeout;
+        $timeout = $this->listener->accept_timeout;
         if($timeout>0){
             $timerId = Yii::$app->eventLooper->addTimeout($timeout*1000, function(){
                 Yii::warning($this." accept timedout, close it", 'beyod');
@@ -171,7 +171,7 @@ class Connection extends BaseConnection
     
     public function checkSSLHandshake($check_eof)
     {
-        if(!$this->listenner->isSSL() || $this->getAttribute('sslhandshaked')){
+        if(!$this->listener->isSSL() || $this->getAttribute('sslhandshaked')){
             return true;
         }
         
@@ -187,7 +187,7 @@ class Connection extends BaseConnection
         $r = stream_socket_enable_crypto(
             $this->socket,
             true,
-            $this->listenner->ssl_version);
+            $this->listener->ssl_version);
         
         if($r === false) {
             Yii::warning($this. " ssl handshake failed");
@@ -217,11 +217,11 @@ class Connection extends BaseConnection
     
     public function read($socket, $check_eof = true)
     {
-        if($this->listenner->isSSL() && !$this->getAttribute('sslhandshaked')){
+        if($this->listener->isSSL() && !$this->getAttribute('sslhandshaked')){
             return $this->checkSSLHandshake($check_eof);
         }
         
-        $buffer = fread($socket, $this->listenner->read_buffer_size);
+        $buffer = fread($socket, $this->listener->read_buffer_size);
         
         if ($buffer === '' || $buffer === false) {
             if ($check_eof && (feof($socket) || !is_resource($socket) )) {
@@ -259,8 +259,8 @@ class Connection extends BaseConnection
         while($this->recvBuffer && !$this->isPaused)
         {
             try{
-                $len = $this->listenner->parser ?
-                    call_user_func([$this->listenner->parser, 'input'], $this->recvBuffer, $this)
+                $len = $this->listener->parser ?
+                    call_user_func([$this->listener->parser, 'input'], $this->recvBuffer, $this)
                     : strlen($this->recvBuffer);
                 
                 if($len === 0) {
@@ -286,8 +286,8 @@ class Connection extends BaseConnection
             $message = substr($this->recvBuffer, 0, $len);
             $this->recvBuffer = substr($this->recvBuffer, $len);
             try{
-                if($this->listenner->parser){
-                    $message = call_user_func([$this->listenner->parser, 'decode'], $message, $this);
+                if($this->listener->parser){
+                    $message = call_user_func([$this->listener->parser, 'decode'], $message, $this);
                 }
             }catch(\Exception $e){
                 
@@ -322,8 +322,8 @@ class Connection extends BaseConnection
             return false;
         }
         
-        if(!$raw && $this->listenner->parser){
-            $message = call_user_func([$this->listenner->getParser(), 'encode'], $message, $this);
+        if(!$raw && $this->listener->parser){
+            $message = call_user_func([$this->listener->getParser(), 'encode'], $message, $this);
         }
         
         if($message === false || $message === null) {
@@ -391,7 +391,7 @@ class Connection extends BaseConnection
     
     public function bufferIsFull() 
     {  
-        return strlen($this->sendBuffer) >= $this->listenner->max_sendbuffer_size;
+        return strlen($this->sendBuffer) >= $this->listener->max_sendbuffer_size;
     }
     
     public function bufferIsDrain()
@@ -507,8 +507,8 @@ class Connection extends BaseConnection
                 unset(static::$connections[$this->id]);
             }
             
-            if(isset($this->listenner->connections[$this->id])){
-                unset($this->listenner->connections[$this->id]);
+            if(isset($this->listener->connections[$this->id])){
+                unset($this->listener->connections[$this->id]);
             }
         }
         
@@ -545,7 +545,7 @@ class Connection extends BaseConnection
     
     public function removeEventLooper()
     {
-        foreach($this->listenner->handler->events() as $name => $callback) {
+        foreach($this->listener->handler->events() as $name => $callback) {
             $this->off($name);
         }
         Yii::$app->eventLooper->del($this->socket, EventLooper::EV_READ);

@@ -38,7 +38,7 @@ class Handler extends \beyod\Handler
         $resp = $this->tag."your connection id ".$event->sender."\r\nPlease input message, quit to disconnect:\r\n";
         $event->sender->send($resp);
         
-        foreach($event->sender->listenner->connections as $id => $conn){
+        foreach($event->sender->listener->connections as $id => $conn){
             if($id == $event->sender->id || $conn->isClosed() ) continue;
             $conn->send($conn." connected");
         }
@@ -50,7 +50,7 @@ class Handler extends \beyod\Handler
     public function onMessage(MessageEvent $event)
     {
         if($event->message == 'quit'){            
-            foreach($event->sender->listenner->connections as $id => $conn){
+            foreach($event->sender->listener->connections as $id => $conn){
                 if($id == $event->sender->id || $conn->isClosed() ) continue;
                 $conn->send($conn.' quit !');
             }
@@ -59,7 +59,7 @@ class Handler extends \beyod\Handler
         }
         
         
-        foreach($event->sender->listenner->connections as $id => $conn){
+        foreach($event->sender->listener->connections as $id => $conn){
             if($id == $event->sender->id || $conn->isClosed() ) continue;
             $conn->send($conn.": ".$event->message);
         }
@@ -68,7 +68,7 @@ class Handler extends \beyod\Handler
     }
     
     public function onClose(CloseEvent $event){
-        foreach($event->sender->listenner->connections as $id => $conn){
+        foreach($event->sender->listener->connections as $id => $conn){
             if($id == $event->sender->id || $conn->isClosed() ) continue;
             $conn->send($conn." disconnected");
         }

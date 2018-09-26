@@ -150,9 +150,9 @@ class Server extends \yii\base\Component
     public $memory_limit = '1024mb'; //MB
     
     /**
-     * @var Listenner[]
+     * @var Listener[]
      */
-    public $listenners = [];
+    public $listeners = [];
     
     protected $master_pid = null;
     
@@ -219,14 +219,14 @@ class Server extends \yii\base\Component
     
     /**
      * @param string|int $name
-     * @return \beyod\Listenner
+     * @return \beyod\Listener
      */
-    public function getListenner($name){
-        return isset($this->listenners[$name]) ? $this->listenners[$name]: null;
+    public function getListener($name){
+        return isset($this->listeners[$name]) ? $this->listeners[$name]: null;
     }
     
     /**
-     * callback after worker started(the listenners has been listened and started accept)
+     * callback after worker started(the listeners has been listened and started accept)
      * @param int $workerId current worker'id 
      * @param int $GPID current worker's GPID(Global process unique identification)
      */
@@ -274,14 +274,14 @@ class Server extends \yii\base\Component
         
         $this->beforeRun();
         
-        foreach($this->listenners as $name => $listenner){
-            if(!isset($listenner['class'])) {
-                $listenner['class'] = __NAMESPACE__. '\Listenner';    
+        foreach($this->listeners as $name => $listener){
+            if(!isset($listener['class'])) {
+                $listener['class'] = __NAMESPACE__. '\Listener';    
             }
             
-            $this->listenners[$name] = Yii::createObject($listenner);
-            if(!$this->listenners[$name]->getOption('SO_REUSEPORT')){
-                $this->listenners[$name]->listen();
+            $this->listeners[$name] = Yii::createObject($listener);
+            if(!$this->listeners[$name]->getOption('SO_REUSEPORT')){
+                $this->listeners[$name]->listen();
             }
         }
         
@@ -292,16 +292,16 @@ class Server extends \yii\base\Component
     }
     
     /**
-     * @param Listenner|array $listenner
-     * @return Listenner
+     * @param Listener|array $listener
+     * @return Listener
      */
-    public function addListenner($name, $listenner)
+    public function addListener($name, $listener)
     {
-        if(isset($this->listenners[$name])) {
-            throw new \Exception("listenner $name already exists");
+        if(isset($this->listeners[$name])) {
+            throw new \Exception("listener $name already exists");
         }
         
-        return $this->listenners[$name] = is_object($listenner) ? $listenner : Yii::createObject($listenner);
+        return $this->listeners[$name] = is_object($listener) ? $listener : Yii::createObject($listener);
     }
     
     protected function beforeRun()
@@ -405,8 +405,8 @@ class Server extends \yii\base\Component
         });
         
         if(!$this->canFork()) {
-            foreach($this->listenners as $name => $listenner){
-                $listenner->startAccept();
+            foreach($this->listeners as $name => $listener){
+                $listener->startAccept();
             }
             
             $this->onWorkerStart($this->getWorkerId(), $this->getGpid());
@@ -476,12 +476,12 @@ class Server extends \yii\base\Component
     {
         Yii::debug("worker forked(Id: $this->worker_id)");
         $this->setSignalHandler();
-        foreach($this->listenners as $name => $listenner){
-            if($listenner->getOption('SO_REUSEPORT')){
-                $listenner->listen();
+        foreach($this->listeners as $name => $listener){
+            if($listener->getOption('SO_REUSEPORT')){
+                $listener->listen();
             }
             
-            $listenner->startAccept();
+            $listener->startAccept();
         }
         
         $this->setTitle("beyod worker");
@@ -542,7 +542,7 @@ class Server extends \yii\base\Component
     }
     
     protected function workerExit($status) {
-        foreach($this->listenners as $service) {
+        foreach($this->listeners as $service) {
             $service->stopAccept();
         }
     

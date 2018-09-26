@@ -31,7 +31,7 @@ class Parser extends \beyod\protocol\http\Parser
     public function input($buffer, $connection)
     {
         if(empty($this->seckey)) {
-            $this->seckey = $connection->listenner->getHandler()->secKey;
+            $this->seckey = $connection->listener->getHandler()->secKey;
         }
         
         if(!$connection->hasAttribute( $this->seckey )) {
