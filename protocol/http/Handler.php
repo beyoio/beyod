@@ -355,9 +355,6 @@ class Handler extends \beyod\Handler
             return ;
         }
         
-        echo $res->mimeType;
-        print_r($this->gzip_types);
-        
         if(in_array($res->mimeType, $this->gzip_types) && 
             $this->sendGzipContent($event, $req, $res, $path, $filesize)) {
             return ;
