@@ -57,6 +57,8 @@ class Handler extends \beyod\Handler
      */
     public $index = ['index.html', 'index.htm', 'index.php'];
     
+    public $mime_file = __DIR__."/mimeTypes.php";
+    
     /**
      * @var array callback for every location regexp match.
      * callback function's signature: function(MessaeEvent, Request $request, Response, $response, $path)
@@ -217,6 +219,7 @@ class Handler extends \beyod\Handler
                 throw new \Exception(null, 0);
             }
             
+            
             if(empty($this->document_root) || !is_dir($this->document_root)) {
                 throw new \Exception("docuent_root is not configed", 404);
             }
@@ -285,21 +288,11 @@ class Handler extends \beyod\Handler
             return ;
         }
         
-        if(strtolower($info['extension']) == 'php') {            
+        if(strtolower($info['extension']) === 'php') {            
             return $this->processPhpFile($event, $req, $res, $path);
         }
         
-        $res->mimeType = FileHelper::getMimeTypeByExtension($path, Yii::getAlias('@beyod/helpers/mimeTypes.php'));
-        if($res->mimeType === null){
-            $res->mimeType = FileHelper::getMimeType($path);
-        }
-        
-        
-        if($this->default_charset && $res->charset===null && substr($res->mimeType, 0, 5) == 'text/') {
-            $res->charset = $this->default_charset;
-        }
-        
-        $this->processStaticFile($event, $req, $res, $path);
+        return $this->processStaticFile($event, $req, $res, $path);
     }
     
     /**
@@ -313,6 +306,15 @@ class Handler extends \beyod\Handler
      */
     public function processStaticFile($event, $req, $res, $path)
     {
+        $res->mimeType = FileHelper::getMimeTypeByExtension($path, __DIR__.'/mimeTypes.php');
+        if($res->mimeType === null){
+            $res->mimeType = FileHelper::getMimeType($path);
+        }
+        
+        if($this->default_charset && $res->charset===null && substr($res->mimeType, 0, 5) == 'text/') {
+            $res->charset = $this->default_charset;
+        }
+        
         if(in_array($req->method, ['POST', 'PUT'])) {
             $res->statusCode = 405;
             return ;
@@ -352,6 +354,9 @@ class Handler extends \beyod\Handler
         if($req->method == 'HEAD') {
             return ;
         }
+        
+        echo $res->mimeType;
+        print_r($this->gzip_types);
         
         if(in_array($res->mimeType, $this->gzip_types) && 
             $this->sendGzipContent($event, $req, $res, $path, $filesize)) {
