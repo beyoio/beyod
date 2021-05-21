@@ -267,6 +267,10 @@ class Connection extends BaseConnection
                     return ;
                 }
                 
+                if($len <0) {
+                    throw new \Exception("bad packet length parsed", Server::ERROR_INVALID_PACKET);
+                }
+                
             }catch (\Exception $e){
                 $this->recvBuffer = '';
                 
